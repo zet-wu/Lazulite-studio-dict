@@ -21,7 +21,7 @@ def validate(path):
         extract_package(path, tmp)
         manifest, _, entries = read_directory(tmp)
         count = sum(1 for _ in entries)
-    return {"id": manifest["id"], "entries": count}
+    return {"id": manifest["id"], "version": manifest["version"], "entries": count}
 
 
 def build():

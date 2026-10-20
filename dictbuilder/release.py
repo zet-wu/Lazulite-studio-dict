@@ -26,8 +26,9 @@ def assets(directory):
     if set(actual) != set(expected):
         raise ValueError("发行目录必须恰好包含全部四个必需 ZIP")
     for name, path in actual.items():
-        if validate(path)["id"] != expected[name]:
-            raise ValueError("发行资产名称与包 ID 不一致")
+        manifest = validate(path)
+        if manifest["id"] != expected[name] or name != f"{manifest['id']}-{manifest['version']}.zip":
+            raise ValueError("发行资产名称与包 ID 或内容版本不一致")
     return [actual[name] for name in sorted(actual)]
 
 
