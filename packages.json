@@ -1,0 +1,75 @@
+{
+  "version": "0.1.0",
+  "packages": [
+    {
+      "id": "zh-pinyin",
+      "name": "汉语拼音",
+      "language": "zh",
+      "region": "普通话",
+      "notation": "汉语拼音，带调符号",
+      "sources": [
+        "pinyin",
+        "phrases",
+        "jieba"
+      ],
+      "aliases": [
+        "s2t",
+        "t2s"
+      ],
+      "notices": [
+        "zh-ATTRIBUTION.txt",
+        "Unicode-LICENSE.txt",
+        "CC-BY-SA-3.0.txt",
+        "CC-BY-SA-4.0.txt"
+      ]
+    },
+    {
+      "id": "yue-jyutping",
+      "name": "粤语粤拼",
+      "language": "yue",
+      "region": "粤语",
+      "notation": "粤拼，数字调号",
+      "sources": [
+        "cantonese"
+      ],
+      "aliases": [
+        "t2s"
+      ],
+      "notices": [
+        "yue-ATTRIBUTION.txt"
+      ]
+    },
+    {
+      "id": "teochew-chaozhou-puj",
+      "name": "潮州话·潮州府城",
+      "language": "nan",
+      "region": "潮州府城",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "ChaoZhou_FuCheng",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-shantou-puj",
+      "name": "潮州话·汕头市区",
+      "language": "nan",
+      "region": "汕头市区",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "ShanTou_ShiQu",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    }
+  ]
+}

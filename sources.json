@@ -1,0 +1,85 @@
+{
+  "pinyin": {
+    "repository": "mozillazg/pinyin-data",
+    "commit": "9e5e9bdfe8add694300e0cc93a27b803b68377f9",
+    "parserVersion": 1,
+    "files": [
+      "pinyin.txt",
+      "kMandarin_8105.txt"
+    ],
+    "licenses": [
+      "LICENSE",
+      "README.md"
+    ]
+  },
+  "phrases": {
+    "repository": "mozillazg/phrase-pinyin-data",
+    "commit": "cee0ed6e6e4898580cafd2bd5e3723e20b214aa0",
+    "parserVersion": 1,
+    "files": [
+      "large_pinyin.txt"
+    ],
+    "licenses": [
+      "LICENSE",
+      "README.md"
+    ]
+  },
+  "jieba": {
+    "repository": "fxsjy/jieba",
+    "commit": "67fa2e36e72f69d9134b8a1037b83fbb070b9775",
+    "parserVersion": 1,
+    "files": [
+      "jieba/dict.txt"
+    ],
+    "licenses": [
+      "LICENSE"
+    ]
+  },
+  "cantonese": {
+    "repository": "rime/rime-cantonese",
+    "commit": "259f0e48bba840c3a2e0d117539e96937f3d89bc",
+    "parserVersion": 1,
+    "files": [
+      "jyut6ping3.chars.dict.yaml",
+      "jyut6ping3.words.dict.yaml",
+      "essay-cantonese.txt"
+    ],
+    "licenses": [
+      "LICENSE-CC-BY",
+      "README-en.md"
+    ]
+  },
+  "pujbase": {
+    "repository": "pujdict/pujbase",
+    "commit": "677c08d2af40c673df51cf8b981eaa9d0acc008c",
+    "parserVersion": 1,
+    "files": [
+      "data/entries.yml",
+      "data/phrases.yml",
+      "data/accents.yml",
+      "data/fuzzy_rules.yml",
+      "libpuj/*.py",
+      "libpuj/*.proto"
+    ],
+    "licenses": [
+      "LICENSE-AGPL",
+      "LICENSE-CC-BY-SA",
+      "README.md"
+    ]
+  },
+  "pujcorpora": {
+    "repository": "pujdict/pujcorpora",
+    "commit": "3dab4a783cd7483ce8bc79a64d46c6ed0115877f",
+    "parserVersion": 1,
+    "parent": "pujbase",
+    "path": "data/pujcorpora",
+    "files": [
+      "std/**/*.std.yml"
+    ],
+    "licenses": [
+      "README.md",
+      "std/SwatowDialectPhrases/README.md",
+      "std/WilliamDuffus/README.md"
+    ]
+  }
+}

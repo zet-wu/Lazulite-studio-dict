@@ -1,0 +1,17 @@
+Lazulite Studio fixed-reading dictionary packages
+
+The converter and data have separate licenses. This repository's AGPL-3.0
+license does not replace the licenses of the generated data.
+
+- rime-cantonese / CanCLID and contributors: CC-BY-4.0.
+  Only chars, words and essay-cantonese are selected; maps is not included.
+- OpenCC conversion data and Python implementation: Apache-2.0.
+
+Changes made by this converter:
+Structured segments and fixed reading units, deterministic deduplication,
+fixed regional pronunciation conversion, optional orthographic query aliases
+and automatically derived word costs. No hand-maintained word corrections.
+Exact source commits and selected files are recorded in sources.json.
+
+Converter source and reproducible build instructions:
+https://github.com/zet-wu/Lazulite-studio-dict

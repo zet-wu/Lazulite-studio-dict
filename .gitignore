@@ -1,0 +1,10 @@
+.cache/
+.venv/
+dist/
+reports/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.agents/
+.aws/
+.codex/

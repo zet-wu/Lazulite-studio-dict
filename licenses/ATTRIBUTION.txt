@@ -1,0 +1,45 @@
+Lazulite Studio fixed-reading dictionary packages
+
+The converter and data have separate licenses. This repository's AGPL-3.0
+license does not replace the licenses of the generated data.
+
+zh-pinyin:
+- mozillazg/pinyin-data and mozillazg/phrase-pinyin-data: MIT.
+  The selected merged files include material attributed by upstream to
+  Unicode/Unihan, CC-CEDICT, zdic.net, zisea.com, guoxuedashi.com,
+  Chinese character/phrase dictionaries and earlier pinyin projects.
+  The complete upstream READMEs and their attribution links are included.
+- Unicode/Unihan: Unicode License; Unicode, Inc.
+- CC-CEDICT: CC-CEDICT contributors, https://cc-cedict.org/ and
+  https://www.mdbg.net/chinese/dictionary?page=cc-cedict .
+  The CC-CEDICT source was historically distributed under CC-BY-SA-3.0;
+  the current project uses CC-BY-SA-4.0. Both notices are retained for the
+  aggregated upstream material. The generated adaptation is shared under
+  CC-BY-SA-4.0, with the other original notices preserved.
+- jieba: fxsjy and contributors, MIT; used only for word-frequency scores.
+- OpenCC conversion data and Python implementation: Apache-2.0.
+
+yue-jyutping:
+- rime-cantonese / CanCLID and contributors: CC-BY-4.0.
+  Only chars, words and essay-cantonese are selected; maps is not included.
+- OpenCC conversion data and Python implementation: Apache-2.0.
+
+teochew-chaozhou-puj and teochew-shantou-puj:
+- pujdict/pujbase and its pinned pujcorpora submodule: upstream declares
+  CC-BY-SA-4.0 for data and AGPL-3.0 for code.
+- The initial character table credits kahaani/dieghv under GPL-3.0:
+  https://github.com/kahaani/dieghv . The original notice is preserved.
+- Corpus source credits (including William Duffus and Lin Lunlun) are in
+  the bundled upstream READMEs. We do not relabel all upstream contributions
+  with the converter's code license.
+- Only build-time phonology rules and explicit regional overrides are used.
+  No upstream interpreter or executable code is included in the data ZIP.
+
+Changes made by this converter:
+Structured segments and fixed reading units, deterministic deduplication,
+fixed regional pronunciation conversion, optional orthographic query aliases
+and automatically derived word costs. No hand-maintained word corrections.
+Exact source commits and selected files are recorded in sources.json.
+
+Converter source and reproducible build instructions:
+https://github.com/zet-wu/Lazulite-studio-dict
