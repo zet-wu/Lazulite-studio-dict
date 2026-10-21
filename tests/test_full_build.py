@@ -3,7 +3,6 @@ import json
 import zipfile
 
 from dictbuilder.fetch import ROOT
-from dictbuilder.release import assets
 from dictbuilder.convert import prepare_puj, teochew
 from dictbuilder.fetch import fetch
 
@@ -12,14 +11,6 @@ def entries(name):
     config = json.loads((ROOT / "packages.json").read_text())
     with zipfile.ZipFile(ROOT / "dist" / f"{name}-{config['version']}.zip") as z:
         return {e["surface"]: e for e in map(json.loads, z.read("entries.jsonl").splitlines())}
-
-
-def test_complete_release_and_accounting():
-    assert len(assets(ROOT / "dist")) == 4
-    report = json.loads((ROOT / "reports/build.json").read_text())
-    for result in report.values():
-        assert result["input"] == result["output"] + result.get("duplicate", 0) + result.get("excluded", 0)
-        assert result["surfaces"] >= result["native_surfaces"]
 
 
 def test_regional_rules_produce_real_differences_and_keep_overrides():

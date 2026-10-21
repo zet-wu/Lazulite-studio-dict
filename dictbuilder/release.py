@@ -5,9 +5,6 @@ import os
 import subprocess
 import tempfile
 from pathlib import Path
-from urllib.parse import quote
-
-from .__main__ import validate
 from .fetch import ROOT
 
 
@@ -21,48 +18,34 @@ def expected_assets():
 
 
 def assets(directory):
-    expected = expected_assets()
-    actual = {p.name: p for p in Path(directory).iterdir() if p.is_file()}
-    if set(actual) != set(expected):
-        raise ValueError("发行目录必须恰好包含全部四个必需 ZIP")
-    for name, path in actual.items():
-        manifest = validate(path)
-        if manifest["id"] != expected[name] or name != f"{manifest['id']}-{manifest['version']}.zip":
-            raise ValueError("发行资产名称与包 ID 或内容版本不一致")
-    return [actual[name] for name in sorted(actual)]
+    # The build has validated these packages. The handoff only needs files.
+    files = [Path(directory) / name for name in sorted(expected_assets())]
+    missing = [p.name for p in files if not p.is_file()]
+    if missing:
+        raise ValueError("缺少必需词典文件：" + ", ".join(missing))
+    return files
 
 
 def release(tag, commit, directory, publish=False):
-    subprocess.run(["git", "check-ref-format", "refs/tags/" + tag], check=True)
+    # The source job resolves and validates the Git ref once for the workflow.
     config = json.loads((ROOT / "packages.json").read_text())
-    if tag != "v" + config["version"]:
-        raise ValueError("标签必须对应 packages.json 的内容版本")
-    refs = api("repos/{owner}/{repo}/git/matching-refs/tags/" + quote(tag, safe=""))
-    if any(r["ref"] == "refs/tags/" + tag for r in refs):
-        if api("repos/{owner}/{repo}/commits/" + quote(tag, safe=""))["sha"] != commit:
-            raise ValueError("标签提交与构建提交不同")
     pages = api("repos/{owner}/{repo}/releases", "--paginate", "--slurp")
     existing = next((r for page in pages for r in page if r["tag_name"] == tag), None)
     if existing and not existing["draft"]:
-        raise ValueError("版本已公开；请更新内容版本与标签")
+        raise ValueError("版本已公开；请使用新标签")
     if existing and existing["target_commitish"] != commit:
         raise ValueError("不能把另一提交的产物写入同一草稿")
     if publish:
-        if not existing or {a["name"] for a in existing["assets"]} != set(expected_assets()):
-            raise ValueError("草稿或完整四包缺失")
-        with tempfile.TemporaryDirectory() as tmp:
-            subprocess.run(["gh", "release", "download", tag, "--dir", tmp], check=True)
-            assets(tmp)
+        if not existing or not set(expected_assets()).issubset(a["name"] for a in existing["assets"]):
+            raise ValueError("草稿或必需词典文件缺失")
         subprocess.run(["gh", "release", "edit", tag, "--draft=false"], check=True)
         return
     files = assets(directory)
-    if existing:
-        for asset in existing["assets"]:
-            subprocess.run(["gh", "release", "delete-asset", tag, asset["name"], "--yes"], check=True)
-    else:
+    if not existing:
         notes = f"""Lazulite Studio 注音词典 {tag}
 
 源码提交：{commit}
+词典内容版本：{config['version']}
 
 四个 ZIP 均可直接在 Studio 的「注音词典」中导入，无需解压。
 汉语拼音和粤语粤拼使用外部权重增强；潮州府城与汕头市区为独立的固定口音包。
@@ -77,7 +60,7 @@ def release(tag, commit, directory, publish=False):
             subprocess.run(["gh", "release", "create", tag, "--target", commit, "--draft",
                             "--title", f"注音词典 {tag}", "--notes-file", str(path)], check=True)
     for path in files:
-        subprocess.run(["gh", "release", "upload", tag, str(path)], check=True)
+        subprocess.run(["gh", "release", "upload", tag, str(path), "--clobber"], check=True)
 
 
 if __name__ == "__main__":

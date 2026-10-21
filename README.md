@@ -46,8 +46,12 @@ python -m dictbuilder report
 
 `Prepare or publish dictionaries` 手动工作流提供两个操作：
 
-1. `prepare-draft`：指定 `v<packages.json version>`；已有 tag 使用其对应提交，否则固定到所选分支当前提交。实际全量构建四包，上传草稿 Release 和独立诊断工件。
-2. `publish-reviewed-draft`：确认实际草稿产物后手动选择；重新下载四个原始 ZIP 校验，再公开同一草稿。
+1. `prepare-draft`：指定合法 Git tag，例如 `v0.1.0`、`0.1.0` 或 `preview-2026-10-21`；已有 tag 使用其对应提交，否则固定到所选分支当前提交。实际全量构建四包，上传草稿 Release 和独立诊断工件。
+2. `publish-reviewed-draft`：确认实际草稿产物后手动选择；检查必需资产齐全后公开同一草稿。
+
+Release tag 与词典内容版本独立。`packages.json.version` 决定包内版本及 ZIP 文件名；指定另一 tag 不会改写词典内容版本。Studio 的默认下载来源由其 `packaging/dictionaries.json` 单独选择，需要填写实际公开的 Release tag。
+
+完整格式检查在每个包构建完成后执行一次。测试、内部工件传递、上传及公开步骤复用该构建结果，只检查交接所需文件是否存在；草稿可包含额外说明附件，重跑只替换必需词典资产。`validate` 命令供独立检查外部包或手工修改后的包使用；Studio 导入时执行自己的外部数据边界校验。
 
 同一标签的重跑只能更新同一提交的草稿；公开版本不能覆盖。构建作业只读，只有 Release 作业使用仓库 GITHUB_TOKEN 写权限。不需个人令牌。普通 push/PR 仅执行契约验证；手动发布不由 push 触发。
 
