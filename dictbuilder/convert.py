@@ -16,9 +16,10 @@ from opencc import OpenCC
 from .format import hard_boundary
 
 
-def segments(surface, units, fine=False):
-    if fine and len(surface) == len(units):
-        return [{"base": char, "annotate": True, "units": [unit]} for char, unit in zip(surface, units)]
+def segments(surface, units):
+    characters = regex.findall(r"\X", surface)
+    if len(characters) == len(units):
+        return [{"base": char, "annotate": True, "units": [unit]} for char, unit in zip(characters, units)]
     return [{"base": surface, "annotate": True, "units": units}]
 
 
@@ -29,7 +30,7 @@ class Collection:
         self.exclusions = []
         self.alias_conflicts = []
 
-    def add(self, surface, units, origin, *, fine=False, priority=0, require_han=True):
+    def add(self, surface, units, origin, *, priority=0, require_han=True):
         self.counts["input"] += 1
         if not surface or require_han and not regex.search(r"\p{Script=Han}|〇", surface):
             reason = "no_written_form"
@@ -43,7 +44,7 @@ class Collection:
             self.counts["excluded"] += 1
             self.exclusions.append({"origin": origin, "surface": surface, "reason": reason})
             return
-        segs = segments(surface, [unicodedata.normalize("NFC", u) for u in units], fine)
+        segs = segments(surface, [unicodedata.normalize("NFC", u) for u in units])
         key = json.dumps(segs, ensure_ascii=False, sort_keys=True)
         candidates = self.entries.setdefault(surface, {})
         if key in candidates:
@@ -98,7 +99,8 @@ class Collection:
                     chosen = next((conv for conv in converters if conv.convert(surface) == alias), None)
                     converted = [chosen.convert(base) for base in bases]
                     if "".join(converted) == alias:
-                        segs = [{**seg, "base": base} for seg, base in zip(c["segments"], converted)]
+                        segs = [part for seg, base in zip(c["segments"], converted)
+                                for part in segments(base, seg["units"])]
                     else:
                         segs = segments(alias, [u for seg in c["segments"] for u in seg["units"]])
                     key = json.dumps(segs, ensure_ascii=False, sort_keys=True)
@@ -106,6 +108,8 @@ class Collection:
                         self.alias_conflicts.append({"surface": surface, "alias": alias, "reason": "reading_or_mapping"})
                     if key not in target:
                         target[key] = {**c, "segments": segs}
+                    else:
+                        target[key]["priority"] = max(target[key]["priority"], c["priority"])
                 if mode == "weighted":
                     cost = native_cost[surface]
                     if alias in costs and costs[alias] != cost:
@@ -152,11 +156,11 @@ def pinyin(paths):
         key, readings = line.split(":", 1)
         surface = chr(int(key[2:], 16))
         for reading in readings.strip().split(","):
-            data.add(surface, [reading], f"pinyin.txt:{n}", fine=True, priority=int(defaults.get(surface) == reading), require_han=False)
+            data.add(surface, [reading], f"pinyin.txt:{n}", priority=int(defaults.get(surface) == reading), require_han=False)
     for n, line in lines(paths["phrases"] / "large_pinyin.txt"):
         data.counts["phrase_source_records"] += 1
         surface, reading = line.split(":", 1)
-        data.add(surface, reading.split(), f"large_pinyin.txt:{n}", fine=True)
+        data.add(surface, reading.split(), f"large_pinyin.txt:{n}")
     frequencies = {}
     for line in (paths["jieba"] / "jieba/dict.txt").read_text("utf-8").splitlines():
         data.counts["frequency_source_records"] += 1
@@ -207,7 +211,6 @@ def cantonese(paths):
                 data.exclusions.append({"origin": f"{filename}:{n}", "surface": surface, "code": code, "reason": "unsupported_code"})
                 continue
             data.add(surface, units, f"{filename}:{n}",
-                     fine=bool(regex.fullmatch(r"[\p{Script=Han}〇]+", surface)),
                      priority=rime_priority(row.get("weight", ""), frequencies.get(surface, 0)))
     return data, *data.finish(frequencies, ("t2s",))
 
@@ -252,7 +255,7 @@ def teochew(paths, accent_id, accents):
                         prons.append(Pronunciation("" if a == "0" else a, b, int(c)))
             for surface in sorted(set(chars.split(","))):
                 for pron in prons:
-                    data.add(surface, [pron.to_written()], f"entries.yml:{chars}:{raw}", fine=True,
+                    data.add(surface, [pron.to_written()], f"entries.yml:{chars}:{raw}",
                              priority={0: 3, 1: 2, 2: 1, 3: 0, -1: 0}[int(freq)])
     files = sorted((paths["pujcorpora"] / "std").rglob("*.std.yml")) + [paths["pujbase"] / "data/phrases.yml"]
     for path in files:
@@ -289,5 +292,5 @@ def teochew(paths, accent_id, accents):
                 if any(not re.fullmatch(r"[\s-]*", s) for s in separators):
                     raise ValueError(f"Unsupported pronunciation separator: {path.name}:{n}: {reading}")
                 for surface in surfaces.split("/"):
-                    data.add(surface, units, f"{path.name}:{n}", fine=False)
+                    data.add(surface, units, f"{path.name}:{n}")
     return data, *data.finish()

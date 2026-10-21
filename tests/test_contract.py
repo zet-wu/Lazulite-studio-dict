@@ -26,9 +26,9 @@ def test_unicode_units_and_coarse_mapping():
 
 def test_surface_deduplication_cost_aliases_and_complete_accounting():
     c = Collection()
-    c.add("重庆", ["chóng", "qìng"], "a", fine=True)
-    c.add("重庆", ["chóng", "qìng"], "duplicate", fine=True)
-    c.add("重庆", ["zhòng", "qìng"], "alternative", fine=True)
+    c.add("重庆", ["chóng", "qìng"], "a")
+    c.add("重庆", ["chóng", "qìng"], "duplicate")
+    c.add("重庆", ["zhòng", "qìng"], "alternative")
     c.add("重 庆", ["x"], "boundary")
     entries, score = c.finish({"重庆": 10}, ("s2t",))
     assert c.counts["input"] == 4 and c.counts["duplicate"] == 1 and c.counts["excluded"] == 1
@@ -72,3 +72,19 @@ def test_arbitrary_publisher_editable_counts_and_archive_boundary(tmp_path):
     stream.seek(0)
     with pytest.raises(ValueError):
         extract_package(stream, tmp_path / "bad")
+
+def test_equal_graphemes_normalize_before_dedup_and_preserve_unequal_units():
+    c = Collection()
+    c.add("𠮷漢\U000e0100", ["ka-", "nâng"], "a")
+    c.add("𠮷漢\U000e0100", ["ka-", "nâng"], "b", priority=3)
+    c.add("人人", ["nâng"], "unequal")
+    c.add("令", ["a", "b"], "single")
+    entries, _ = c.finish()
+    by = {e["surface"]: e["candidates"] for e in entries}
+    assert len(by["𠮷漢\U000e0100"]) == 1
+    assert by["𠮷漢\U000e0100"][0]["priority"] == 3
+    assert by["𠮷漢\U000e0100"][0]["segments"] == [
+        {"base": "𠮷", "annotate": True, "units": ["ka-"]},
+        {"base": "漢\U000e0100", "annotate": True, "units": ["nâng"]}]
+    assert by["人人"][0]["segments"][0]["base"] == "人人"
+    assert by["令"][0]["segments"][0]["units"] == ["a", "b"]

@@ -36,7 +36,7 @@ def test_explicit_regional_phrase_is_not_converted_twice_and_keeps_light_marker(
         "      - ChaoZhou_FuCheng: [iau1--nang5]\n"
         "- 本词|iau1-nang5|||:\n", encoding="utf-8")
     collection, result, _ = teochew({"pujbase": tmp_path, "pujcorpora": tmp_path}, "ChaoZhou_FuCheng", accents)
-    values = {e["surface"]: e["candidates"][0]["segments"][0]["units"] for e in result}
+    values = {e["surface"]: [u for s in e["candidates"][0]["segments"] for u in s["units"]] for e in result}
     assert values["测试"] == ["iau--", "nâng"]
     assert values["本词"][0] == "ieu-"
     assert collection.counts["regional_phrase_records"] == 1
