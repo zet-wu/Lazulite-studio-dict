@@ -88,3 +88,28 @@ def test_equal_graphemes_normalize_before_dedup_and_preserve_unequal_units():
         {"base": "漢\U000e0100", "annotate": True, "units": ["nâng"]}]
     assert by["人人"][0]["segments"][0]["base"] == "人人"
     assert by["令"][0]["segments"][0]["units"] == ["a", "b"]
+
+
+def test_pinyin_tones_normalization_exclusions_and_alias_priority(tmp_path):
+    import unicodedata
+    from dictbuilder.convert import pinyin
+    (tmp_path / "jieba").mkdir()
+    tones = "à á è é ì í ò ó ù ú ā ǜ ê̄ ḿ ń ň ǹ".split()
+    surfaces = ["汉"] + [chr(0x4e00 + i) for i in range(len(tones) - 1)]
+    defaults = [f"U+{ord(s):04X}: {unicodedata.normalize('NFD', r)}" for s, r in zip(surfaces, tones)]
+    defaults += ["U+91CD: zhòng ?", "U+884C: xíng ->", "U+9577: cháng <-"]
+    (tmp_path / "kMandarin_8105.txt").write_text("\n".join(defaults))
+    (tmp_path / "pinyin.txt").write_text("\n".join(
+        [f"U+{ord(s):04X}: {r},a" for s, r in zip(surfaces, tones)]
+        + ["U+91CD: zhòng,chóng", "U+884C: xíng,háng", "U+9577: cháng,zhǎng"]))
+    (tmp_path / "large_pinyin.txt").write_text("汉: à\n")
+    (tmp_path / "jieba/dict.txt").write_text("汉 10\n")
+    _, entries, _ = pinyin(dict.fromkeys(("pinyin", "phrases", "jieba"), tmp_path))
+    by = {e["surface"]: e["candidates"] for e in entries}
+    for s, r in zip(surfaces, tones):
+        preferred = [c for c in by[s] if c["priority"] == 1]
+        assert len(preferred) == 1
+        assert preferred[0]["segments"][0]["units"] == [unicodedata.normalize("NFC", r)]
+    assert next(c for c in by["漢"] if c["priority"] == 1)["segments"][0]["units"] == ["à"]
+    for s in "重行長":
+        assert all(c["priority"] == 0 for c in by[s])

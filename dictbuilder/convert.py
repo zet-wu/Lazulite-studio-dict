@@ -149,13 +149,17 @@ def pinyin(paths):
         if not line:
             continue
         key, reading = line.split(":", 1)
-        if re.fullmatch(r"U\+[0-9A-Fa-f]+", key) and re.fullmatch(r"[a-züêā-ǜḿńňǹ]+", reading.strip()):
-            defaults[chr(int(key[2:], 16))] = reading.strip()
+        reading = unicodedata.normalize("NFC", reading.strip())
+        # Decomposition covers every toned vowel (including ê), ü and syllabic m/n.
+        decomposed = unicodedata.normalize("NFD", reading)
+        if re.fullmatch(r"U\+[0-9A-Fa-f]+", key) and re.fullmatch(r"[a-z\u0300\u0301\u0302\u0304\u0308\u030c]+", decomposed):
+            defaults[chr(int(key[2:], 16))] = reading
     for n, line in lines(paths["pinyin"] / "pinyin.txt"):
         data.counts["character_source_records"] += 1
         key, readings = line.split(":", 1)
         surface = chr(int(key[2:], 16))
         for reading in readings.strip().split(","):
+            reading = unicodedata.normalize("NFC", reading)
             data.add(surface, [reading], f"pinyin.txt:{n}", priority=int(defaults.get(surface) == reading), require_han=False)
     for n, line in lines(paths["phrases"] / "large_pinyin.txt"):
         data.counts["phrase_source_records"] += 1
