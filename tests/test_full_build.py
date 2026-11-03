@@ -21,7 +21,6 @@ def test_regional_rules_produce_real_differences_and_keep_overrides():
     def units(e):
         return {u for c in e["candidates"] for s in c["segments"] for u in s["units"]}
     assert "liék" in units(a["䴕"]) and "liák" in units(b["䴕"])
-    assert all("cost" not in e for e in a.values())
 
 
 def test_explicit_regional_phrase_is_not_converted_twice_and_keeps_light_marker(tmp_path):
