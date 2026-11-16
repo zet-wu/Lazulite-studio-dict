@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "1.1.1",
   "packages": [
     {
       "id": "zh-pinyin",
@@ -41,9 +41,9 @@
     },
     {
       "id": "teochew-chaozhou-puj",
-      "name": "潮州话·潮州府城",
+      "name": "潮州话·潮州",
       "language": "nan",
-      "region": "潮州府城",
+      "region": "潮州",
       "notation": "PUJ 白话字，带调符号",
       "accent": "ChaoZhou_FuCheng",
       "sources": [
@@ -56,12 +56,108 @@
       ]
     },
     {
-      "id": "teochew-shantou-puj",
-      "name": "潮州话·汕头市区",
+      "id": "teochew-raoping-puj",
+      "name": "潮州话·饶平",
       "language": "nan",
-      "region": "汕头市区",
+      "region": "饶平",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "RaoPing_HuangGang",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-chenghai-puj",
+      "name": "潮州话·澄海",
+      "language": "nan",
+      "region": "澄海",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "ChengHai_ChengCheng",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-shantou-puj",
+      "name": "潮州话·汕头",
+      "language": "nan",
+      "region": "汕头",
       "notation": "PUJ 白话字，带调符号",
       "accent": "ShanTou_ShiQu",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-jieyang-puj",
+      "name": "潮州话·揭阳",
+      "language": "nan",
+      "region": "揭阳",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "JieYang_RongCheng",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-puning-puj",
+      "name": "潮州话·普宁",
+      "language": "nan",
+      "region": "普宁",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "PuNing_LiuSha",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-chaoyang-puj",
+      "name": "潮州话·潮阳",
+      "language": "nan",
+      "region": "潮阳",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "ChaoYang_HePing",
+      "sources": [
+        "pujbase",
+        "pujcorpora"
+      ],
+      "notices": [
+        "teochew-ATTRIBUTION.txt",
+        "GPL-3.0.txt"
+      ]
+    },
+    {
+      "id": "teochew-huilai-puj",
+      "name": "潮州话·惠来",
+      "language": "nan",
+      "region": "惠来",
+      "notation": "PUJ 白话字，带调符号",
+      "accent": "HuiLai_HuiCheng",
       "sources": [
         "pujbase",
         "pujcorpora"

@@ -2,6 +2,8 @@
 import json
 import zipfile
 
+import pytest
+
 from dictbuilder.fetch import ROOT
 from dictbuilder.convert import prepare_puj, teochew
 from dictbuilder.fetch import fetch
@@ -39,3 +41,20 @@ def test_explicit_regional_phrase_is_not_converted_twice_and_keeps_light_marker(
     assert values["测试"] == ["iau--", "nâng"]
     assert values["本词"][0] == "ieu-"
     assert collection.counts["regional_phrase_records"] == 1
+
+
+@pytest.mark.parametrize("slug,word,reading", [
+    ("chaozhou", "腰", "ieu"),
+    ("raoping", "买", "bói"),
+    ("chenghai", "心", "sing"),
+    ("shantou", "腰", "iau"),
+    ("jieyang", "闲", "âinn"),
+    ("puning", "漫", "muáng"),
+    ("chaoyang", "漫", "bvuáng"),
+    ("huilai", "鱼", "ngû"),
+])
+def test_selected_regional_package_has_source_reading(slug, word, reading):
+    # Real source words exercise each configured package through the full build.
+    entry = entries(f"teochew-{slug}-puj")[word]
+    assert reading in {u for c in entry["candidates"]
+                       for s in c["segments"] for u in s["units"]}

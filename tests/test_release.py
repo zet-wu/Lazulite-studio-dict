@@ -39,6 +39,9 @@ def test_prepare_accepts_independent_tag_and_uploads_only_required_files(tmp_pat
     assert all(c[:4] == ["gh", "release", "upload", tag] for c in calls[1:])
     version = json.loads((release.ROOT / "packages.json").read_text())["version"]
     assert f"词典内容版本：{version}" in notes[0]
+    config = json.loads((release.ROOT / "packages.json").read_text())
+    for package in config["packages"]:
+        assert f"{package['name']}（{package['id']}）" in notes[0]
 
 
 def test_publish_reviewed_draft_with_extra_attachment(tmp_path, monkeypatch):

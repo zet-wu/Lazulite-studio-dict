@@ -41,14 +41,18 @@ def release(tag, commit, directory, publish=False):
         subprocess.run(["gh", "release", "edit", tag, "--draft=false"], check=True)
         return
     files = assets(directory)
+    package_list = "\n".join(f"- {p['name']}（{p['id']}）" for p in config["packages"])
     if not existing:
         notes = f"""Lazulite Studio 注音词典 {tag}
 
 源码提交：{commit}
 词典内容版本：{config['version']}
 
-四个 ZIP 均可直接在 Studio 的「注音词典」中导入，无需解压。
-汉语拼音和粤语粤拼使用外部权重增强；潮州府城与汕头市区为独立的固定口音包。
+共 {len(config["packages"])} 个 ZIP，均可直接在 Studio 的「注音词典」中导入，无需解压。
+汉语拼音和粤语粤拼使用外部权重增强；潮州话按地区提供独立的固定口音包。
+
+{package_list}
+
 读音不计算连续变调。来源、署名、许可与转换说明保存在每个 ZIP 内。
 数据更新独立于 Studio；符合格式 v1 的自定义修改包也可导入。
 
